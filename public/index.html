@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typhoon RAG Manager</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-tornado"></i>
+                </div>
+                <div class="brand-text">
+                    <span>Typhoon</span>
+                    <small>RAG Manager</small>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <p class="menu-label">MENU</p>
+                <button class="nav-btn active" onclick="showTab('files')">
+                    <i class="fa-solid fa-folder-tree"></i>
+                    <span>Documents</span>
+                </button>
+                <button class="nav-btn" onclick="showTab('collections')">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Collections</span>
+                </button>
+                <button class="nav-btn" onclick="showTab('chat')">
+                    <i class="fa-solid fa-message"></i>
+                    <span>AI Chat Assistant</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-details">
+                        <span class="name">Admin User</span>
+                        <span class="status">Online</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <!-- Top Header -->
+            <header class="top-header">
+                <h2 id="page-title">Dashboard</h2>
+                <div class="header-actions">
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+
+            <!-- FILES PAGE -->
+            <main id="files" class="tab-content active fade-in">
+                <div class="content-container">
+                    <!-- Upload Section -->
+                    <div class="section-card upload-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-cloud-arrow-up"></i> Upload Data</h3>
+                        </div>
+                        <div class="upload-zone">
+                            <input type="file" id="fileInput" multiple accept=".pdf, .png, .jpg, .jpeg, .txt" class="file-input-hidden">
+                            <div class="upload-placeholder" onclick="document.getElementById('fileInput').click()">
+                                <div class="icon-wrapper">
+                                    <i class="fa-solid fa-file-import"></i>
+                                </div>
+                                <h4>Drop files here or click to browse</h4>
+                                <p>Supports PDF, images, and text files for RAG processing</p>
+                            </div>
+                            <div class="upload-actions">
+                                <button class="btn btn-primary" onclick="uploadFiles()">
+                                    <i class="fa-solid fa-upload"></i> Start Upload
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Files Table -->
+                    <div class="section-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-table-list"></i> Managed Documents</h3>
+                            <div class="card-tools">
+                                <span class="badge">Total: <span id="fileCount">0</span></span>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Document Name</th>
+                                        <th>Status</th>
+                                        <th class="actions-col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fileList">
+                                    <!-- JS injects rows here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- COLLECTIONS PAGE -->
+            <main id="collections" class="tab-content fade-in">
+                <div class="content-container">
+                    <div class="section-card">
+                         <div class="card-header">
+                            <h3><i class="fa-solid fa-database"></i> Vector Database Collections</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="loadCollections()">
+                                <i class="fa-solid fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <ul id="collectionList" class="collection-list">
+                                <!-- JS injects here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- CHAT PAGE -->
+            <main id="chat" class="tab-content fade-in h-100">
+                <div class="chat-layout">
+                    <div class="chat-header-simple">
+                        <div class="ai-avatar">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="ai-info">
+                            <h4>Typhoon AI</h4>
+                            <span>Powered by SCB 10X</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-workspace">
+                        <div id="chatHistory" class="chat-history">
+                            <div class="message system-message">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>System ready. You can ask questions based on your uploaded documents.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-wrapper">
+                        <div class="input-group">
+                            <input type="text" id="chatInput" placeholder="Type your question here..." onkeypress="handleChatKey(event)">
+                            <button class="btn btn-primary btn-send" onclick="sendMessage()">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <small>AI can make mistakes. Please verify important information.</small>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Editor Modal -->
+    <div id="editorModal" class="modal-backdrop hidden">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3><i class="fa-regular fa-pen-to-square"></i> Edit Content</h3>
+                <button class="icon-btn-close" onclick="closeEditor()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <textarea id="markdownEditor" placeholder="Edit the extracted text context here..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditor()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMarkdown()">
+                    <i class="fa-regular fa-floppy-disk"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
